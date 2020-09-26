@@ -1,4 +1,4 @@
-core.Microsoft*
-env.py
+*.sglite3
+*.pyc
 __pycache__/
 *.py[cod]
