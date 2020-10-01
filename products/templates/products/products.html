@@ -53,52 +53,52 @@
                         </div>
 
                         <!-- Now this looks pretty good but we're gonna make it even better using a little Django template magic.
-I want to create a full-width horizontal rule after each row of products.
-But since the product cards are all columns inside a single row
-The number of products in each row will change depending on the screen size.
-We could accomplish what we wanted though
-if for example, we knew that there were four columns on the screen and thus
-every fifth column we'd render a full-width column. In other words a col-12
-If there were three products in each row then we'd want to render the full width
-column every fourth column
-every third column when there are two products.
-and every other column when the products are stacked one by one.
-Let's start with the simplest situation.
-On mobile products will be stacked on top of each other
-so if we want a full-width horizontal rule then we need to render it after every single product.
-The problem with this will be obvious if we take a look at the site now.
-Since we're rendering a full width column it pushes all the products to the next row on all screens.
-We can fix that by using the display small none class
-which will prevent this column from rendering on everything except extra small screens.
-That presents another problem though because now we don't have the horizontal
-rule on small or medium screens where there are two products in each row.
-I'll add another column which will be display: none by default
-to keep it hidden on extra small screens. And display block on small screens and larger.
-Now we're back to the same problem we had before.
-With the extra column rendering on every iteration of the loop.
-And it will render on screens where there are more than two products in a row also.
-The solution here is that we need to render this column on small and medium screens
-only when the iteration number of the loop is divisible by two.
-Because there will be two six-column products in each row
-So every set of two products, because that'll add up to twelve columns.
-That's where we want to render the extra one.
-I'll accomplish this by using a couple of built-in django template tags in an if statement.
-Let's say if for loop.counter
-Is divisible by two
-Then we want to render this column.
-And it'll be visible only on small and medium screens. So we'll use display small block.
-Display medium block
-And display large none to hide it on large and up.
-On large screens, we need to do the same.
-But there will be three products in each row.
-So let's use divisible by three hiding it on everything except large.
-And finally let's handle extra-large screens which will have four products
-in each row so we'll want to render this extra one every four columns.
-I am also going to wrap the extra small horizontal rule in a similar if statement.
-Just to be explicit about what we're doing though obviously, this isn't necessary
-since the counter will always be divisible by one.
-Let's also add a bit of bottom margin after each one of these horizontal rules.
-And if this made your head spin don't worry -->
+                        I want to create a full-width horizontal rule after each row of products.
+                        But since the product cards are all columns inside a single row
+                        The number of products in each row will change depending on the screen size.
+                        We could accomplish what we wanted though
+                        if for example, we knew that there were four columns on the screen and thus
+                        every fifth column we'd render a full-width column. In other words a col-12
+                        If there were three products in each row then we'd want to render the full width
+                        column every fourth column
+                        every third column when there are two products.
+                        and every other column when the products are stacked one by one.
+                        Let's start with the simplest situation.
+                        On mobile products will be stacked on top of each other
+                        so if we want a full-width horizontal rule then we need to render it after every single product.
+                        The problem with this will be obvious if we take a look at the site now.
+                        Since we're rendering a full width column it pushes all the products to the next row on all screens.
+                        We can fix that by using the display small none class
+                        which will prevent this column from rendering on everything except extra small screens.
+                        That presents another problem though because now we don't have the horizontal
+                        rule on small or medium screens where there are two products in each row.
+                        I'll add another column which will be display: none by default
+                        to keep it hidden on extra small screens. And display block on small screens and larger.
+                        Now we're back to the same problem we had before.
+                        With the extra column rendering on every iteration of the loop.
+                        And it will render on screens where there are more than two products in a row also.
+                        The solution here is that we need to render this column on small and medium screens
+                        only when the iteration number of the loop is divisible by two.
+                        Because there will be two six-column products in each row
+                        So every set of two products, because that'll add up to twelve columns.
+                        That's where we want to render the extra one.
+                        I'll accomplish this by using a couple of built-in django template tags in an if statement.
+                        Let's say if for loop.counter
+                        Is divisible by two
+                        Then we want to render this column.
+                        And it'll be visible only on small and medium screens. So we'll use display small block.
+                        Display medium block
+                        And display large none to hide it on large and up.
+                        On large screens, we need to do the same.
+                        But there will be three products in each row.
+                        So let's use divisible by three hiding it on everything except large.
+                        And finally let's handle extra-large screens which will have four products
+                        in each row so we'll want to render this extra one every four columns.
+                        I am also going to wrap the extra small horizontal rule in a similar if statement.
+                        Just to be explicit about what we're doing though obviously, this isn't necessary
+                        since the counter will always be divisible by one.
+                        Let's also add a bit of bottom margin after each one of these horizontal rules.
+                        And if this made your head spin don't worry -->
                         {% if forloop.counter|divisibleby:1 %}
                             <div class="col-12 d-sm-none mb-5">
                                 <hr>
