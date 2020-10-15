@@ -49,7 +49,38 @@
                                         <p class="my-0">${{ item.product.price }}</p>
                                     </td>
                                     <td class="py-3 w-25">
-                                        <p class="my-0">{{ item.quantity }}</p>
+                                        <form class="form update-form" method="POST" action="">
+                                            {% csrf_token %}
+                                            <div class="form-group">
+                                                <div class="input-group">
+                                                    <div class="input-group-prepend">
+                                                        <button class="decrement-qty btn btn-sm btn-black rounded-0" 
+                                                            data-item_id="{{ item.item_id }}" id="decrement-qty_{{ item.item_id }}">
+                                                            <span>
+                                                                <i class="fas fa-minus fa-sm"></i>
+                                                            </span>
+                                                        </button>
+                                                    </div>
+                                                    <input class="form-control form-control-sm qty_input" type="number"
+                                                        name="quantity" value="{{ item.quantity }}" min="1" max="99"
+                                                        data-item_id="{{ item.item_id }}"
+                                                        id="id_qty_{{ item.item_id }}">
+                                                    <div class="input-group-append">
+                                                        <button class="increment-qty btn btn-sm btn-black rounded-0"
+                                                            data-item_id="{{ item.item_id }}" id="increment-qty_{{ item.item_id }}">
+                                                            <span>
+                                                                <i class="fas fa-plus fa-sm"></i>
+                                                            </span>
+                                                        </button>
+                                                    </div>
+                                                    {% if item.product.has_sizes %}
+                                                        <input type="hidden" name="product_size" value="{{ item.size }}">
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                        </form>
+                                        <a class="update-link text-info"><small>Update</small></a>
+                                        <a class="remove-item text-danger float-right" id="remove_{{ item.item_id }}" data-size="{{ item.size }}"><small>Remove</small></a>
                                     </td>
                                     <td class="py-3">
                                         <p class="my-0">${{ item.product.price }}</p>
@@ -99,3 +130,65 @@
         </div>
     </div>
 {% endblock %}
+
+{% block postloadjs %}
+{{ block.super }}
+{% include 'products/includes/quantity_input_script.html' %}
+
+<script type="text/javascript">
+    // Update quantity on click
+    $('.update-link').click(function(e) {
+        var form = $(this).prev('.update-form');
+        form.submit();
+    })
+
+    // Remove item and reload on click
+    $('.remove-item').click(function(e) {
+        var csrfToken = "{{ csrf_token }}";
+        var itemId = $(this).attr('id').split('remove_')[1];
+        var size = $(this).data('size');
+        var url = `/bag/remove/${itemId}`;
+        var data = {'csrfmiddlewaretoken': csrfToken, 'size': size};
+
+        $.post(url, data)
+         .done(function() {
+             location.reload();
+         });
+    })
+</script>
+
+{% endblock %}
+
+<!--Now let's write the JavaScript to handle these two elements being clicked.
+Back in the post loadjs block I'll add a new script.
+On the click event of the update link.
+I'll use the previous method to find the most recently seen update form in the Dom.
+Store the form in a variable. And then call the forms submit method.
+The remove link is a bit more complex but it'll still be handled with its click event.
+The intention here is to post some data to a URL. Which we'll create in a future video.
+And once the response comes back from the server reload the page to reflect the updated bag.
+To accomplish this we need several variables.
+We need the CSRF token which we can store as a string by just rendering it here.
+And notice that this uses the actual template variable with the double curly brackets.
+As opposed to the template tag which uses the inner percent signs.
+This is because the former renders the actual token.
+While the latter renders a hidden input field in a form.
+Then we need the item id and the size of the item to be removed.
+The item id can be obtained by splitting the ID of the update link being clicked on
+at the underscore and taking the second half of it.
+I've used the entire first part of the string here remove_
+Just to be very explicit about what we're splitting.
+Now to get the size will again use the data method to pull it from the data size attribute.
+And by the way if this isn't clear do some googling about using data attributes in HTML elements.
+As it's a very handy trick to have up your sleeve.
+Finally we need two more variables. A URL which will be bag/remove/ the itemId
+And this is a template literal. And we'll make this URL in a future video.
+And we need data. Which is the object we'll use to send this data to the server.
+The data variable will contain a special key called CSRF middleware token
+all lowercase.
+Which will have our variable as its value and it'll contain the size.
+The CSRF middleware token key will match the field Django is expecting
+to see in request.post when we post it to the server.
+To do that it's as simple as using the post method from jQuery.
+Giving it both the URL and the data.
+And when done. Will execute a function to reload the page.-->
