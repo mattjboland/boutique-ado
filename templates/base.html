@@ -114,7 +114,17 @@
     </header>
 
     {% if messages %}
-        <div class="message-container"></div>
+        <div class="message-container">
+        <!-- With those all saved. Let's move to base.html.
+                And find the message container toward the bottom of the page.
+                Inside the message container, we'll want to iterate through any messages
+                sent back form the server and render one of these includes.
+                To demonstrate let's just include includes/toasts/toasts_success.html
+                And then go to the add to bag view in the bag app. -->
+            {% for message in messages %}
+                {% include 'includes/toasts/toast_success.html' %}
+            {% endfor %}
+        </div>
     {% endif %}
 
     {% block page_header %}
@@ -124,6 +134,21 @@
     {% endblock %}
 
     {% block postloadjs %}
+    <!-- The next piece of the puzzle is to use the bootstrap JavaScript to show the toast.
+            Which we can do in the post loadjs block of base.html.
+            All we have to do is add a little JavaScript. To call the toast method from bootstrap. With an option of show.
+            On any elements with the toast class.
+            Putting this in the base HTML template will ensure that every page that loads
+            will immediately call the show option on all toasts that have been rendered in the messages container
+            This also explains why for all this time we've been including block dot super in
+            our templates when overriding the post loadjs block.
+            By doing that we ensure that any JavaScript we've written in the templates that extend this one
+            Won't overwrite this call to show all the toasts. -->
+            
+    <script type="text/javascript">
+        $('toast').toast('show');
+    </script>
+
     {% endblock %}
 
 </body>
