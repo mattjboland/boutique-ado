@@ -121,8 +121,29 @@
                 sent back form the server and render one of these includes.
                 To demonstrate let's just include includes/toasts/toasts_success.html
                 And then go to the add to bag view in the bag app. -->
+                <!-- To demonstrate let's go back to the base template and add a bit more to the messages loop.
+                        Djanggo messages have what are called levels which are
+                        classifiers like debug info error and so on for different message types.
+                        If you look in the Django Docs you'll see they can be represented with an integer as well.
+                        So we can choose which of our includes we want to render based on the message level.
+                        Using a simple with statement. We can check the level of the message.
+                        And render the appropriate toast.
+                        In Django, a message of level 40 is an error.
+                        Level 30 is a warning.
+                        Level 25 is success.
+                        And will default to using the info toast for everything else. -->
             {% for message in messages %}
-                {% include 'includes/toasts/toast_success.html' %}
+                {% with message.level as level %}
+                    {% if level == 40 %}
+                        {% include 'includes/toasts/toast_error.html' %}
+                    {% elif level == 30 %}
+                        {% include 'includes/toasts/toast_warning.html' %}
+                    {% elif level == 25 %}
+                        {% include 'includes/toasts/toast_success.html' %}
+                    {% else %}
+                        {% include 'includes/toasts/toast_info.html' %}
+                    {% endif %}
+                {% endwith %}
             {% endfor %}
         </div>
     {% endif %}
