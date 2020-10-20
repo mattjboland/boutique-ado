@@ -22,6 +22,71 @@ And these two divs at the top. -->
     <div class="toast-body bg-white">
         <!-- In the body of the toast you'll see the message template variable.
         And that's because this is going to be included in the message container in the base template. -->
-          {{ message }}        
+                <div class="row">
+                <!-- Let's add a little extra something to the success notification.
+                        Since most of the time it'll be used when a user updates their shopping bag.
+                        We'll add a little preview of the bag right there in the notification.
+                        Let's begin by wrapping the original message in a row and a column.
+                        And putting a horizontal rule under it.
+                        Beneath that will render the shopping bag items.
+                        But we obviously only want to do that if there's a grand total.
+                        The header here is just a simple paragraph.
+                        Which shows the number of items in the bag in parentheses.
+                        Then for each item in the bag.
+                        We'll render a new row split into columns of three and nine.
+                        The first column will contain the image.
+                        And the other 75% of the row will have a paragraph for the items name.
+                        Size if it's applicable and the quantity in the bag.
+                        I'll also wrap this whole block of code in a div with a class of bag-notification-wrapper.
+                        Which is going to restrict it from getting too large and we'll add the CSS for that in a moment.
+                        The last row here is just a single column which will contain the bag total.
+                        A notification about free delivery. And a button to go to the shopping bag page.
+                        At this point, you've seen most of this code in other places across the site.
+                        It begins with the total and adds a note that it excludes delivery if there is a free delivery delta.
+                        Then if there is a free delivery delta we render a paragraph
+                        to tell them how much more they need to spend in order to get free delivery.
+                        And finally a button which points at the view bag URL.
+                        The only thing left to do to finish this. Is to add the CSS for the bag notification wrapper. -->
+            <div class="col">
+                {{ message }}
+                <hr class="mt-1 mb-3">
+            </div>
+        </div>
+        {% if grand_total %}
+            <p class="logo-font bg-white text-black py-1">Your Bag ({{ product_count }})</p>
+            <div class="bag-notification-wrapper">
+                {% for item in bag_items %}
+                    <div class="row">
+                        <div class="col-3 my-1">
+                            <img class="w-100" src="{{ item.product.image.url }}">
+                        </div>
+                        <div class="col-9">
+                            <p class="my-0"><strong>{{ item.product.name }}</strong></p>
+                            <p class="my-0 small">Size: {% if item.product.has_sizes %}{{ item.size|upper }}{% else %}N/A{% endif %}</p>
+                            <p class="my-0 small text-muted">Qty: {{ item.quantity }}</p>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+            <div class="row">
+                <div class="col">
+                    <strong><p class="mt-3 mb-1 text-black">
+                        Total{% if free_delivery_delta > 0 %} (Exc. delivery){% endif %}: 
+                        <span class="float-right">${{ total|floatformat:2 }}</span>
+                    </p></strong>
+                    {% if free_delivery_delta > 0 %}
+                        <p class="mb-0 p-2 bg-warning shadow-sm text-black text-center">
+                            Spend <strong>${{ free_delivery_delta }}</strong> more to get free next day delivery!
+                        </p>
+                    {% endif %}
+                    <a href="{% url 'view_bag' %}" class="btn btn-black btn-block rounded-0">
+                        <span class="text-uppercase">Go To Secure Checkout</span>
+                        <span class="icon">
+                            <i class="fas fa-lock"></i>
+                        </span>
+                    </a>
+                </div>
+            </div>
+        {% endif %}       
     </div>
 </div>
