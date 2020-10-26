@@ -189,5 +189,25 @@ STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static')),
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
+# Stripe
+
+"""First I'll add a setting called STRIPE_CURRENCY which for the moment will
+have a value of usd.
+These next two are important. The first one is STRIPE_PUBLIC_KEY
+And we'll want to get this from the environment giving it an empty
+default value. The same is true for STRIPE_SECRET_KEY.
+The reason we're getting these from the environment
+is because even though the public key is already in our github from the
+last commit. We really don't want the secret key in there because the
+secret key can be used to do everything on stripe including creating
+charges making payments, issuing refunds, and even updating our own
+account information. So it's really important to keep the secret key
+safe and out of version control.
+The public key is meant to be public so that doesn't really matter.
+But for consistency, I'm adding it here anyway."""
+
 FREE_DELIVERY_THRESHOLD = 50
 STANDARD_DELIVERY_PERCENTAGE = 10
+STRIPE_CURRENCY = 'usd'
+STRIPE_PUBLIC_KEY = os.getenv('STRIPE_PUBLIC_KEY', '')
+STRIPE_SECRET_KEY = os.getenv('STRIPE_SECRET_KEY', '')

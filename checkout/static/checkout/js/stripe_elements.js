@@ -43,3 +43,40 @@ var style = {
 };
 var card = elements.create('card', {style: style});
 card.mount('#card-element');
+
+// Handle realtime validation errors on the card element
+// First let's add a listener on the card element for the change event.
+// And every time it changes we'll check to see if there are any errors.
+// If so we'll display them in the card errors div we created near the card element on the checkout page.
+// Looking at the site now it's more clear what the issue is if the user experience is an error.
+
+// As we've rendered the error from stripe with a nice little icon next to it.
+// Before we dive into the code let's briefly discuss how this is going to work.
+// Stripe works with what are called payment intents.
+// The process will be that when a user hits the checkout page
+// the checkout view will call out to stripe and create a payment intent
+// for the current amount of the shopping bag.
+// When stripe creates it. it'll also have a secret that identifies it.
+// Which will be returned to us and we'll send it to the template as the client secret variable.
+// Then in the JavaScript on the client side.
+// We'll call the confirm card payment method from stripe js.
+// Using the client secret which will verify the card number.
+// The first thing needed to accomplish that is a function to calculate
+// the current bag total in the view.
+// Even though we wrote it for a different purpose we've actually already got the
+// code we need right in the context processor in the bag app.
+
+card.addEventListener('change', function (event) {
+    var errorDiv = document.getElementById('card-errors');
+    if (event.error) {
+        var html = `
+            <span class="icon" role="alert">
+                <i class="fas fa-times"></i>
+            </span>
+            <span>${event.error.message}</span>
+        `;
+        $(errorDiv).html(html);
+    } else {
+        errorDiv.textContent = '';
+    }
+});
