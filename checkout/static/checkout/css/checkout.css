@@ -1,0 +1,53 @@
+/* I can also get some CSS for our actual CSS file from the stripe documentation
+    which I'll paste in here.
+    The majority of this will stay the same.
+    But I'm going to get rid of the orange border around the card element
+    if the card number is invalid.
+    And change the border-radius to zero.
+
+    You might recall also that we added a stripe style input class
+    to all the fields in the order form in forms.py
+    Which means to make all the other fields follow the same CSS
+    All I need to do is add that class to our CSS next to all the stripe classes.
+    I'll add it here alongside stripe element.
+    Its focus and active pseudo-classes here with stripes.
+    And then match its placeholder colour as well.
+    */
+
+.StripeElement,
+.stripe-style-input {
+  box-sizing: border-box;
+  height: 40px;
+  padding: 10px 12px;
+  border: 1px solid transparent;
+  border-radius: 0px;
+  background-color: white;
+  box-shadow: 0 1px 3px 0 #e6ebf1;
+  -webkit-transition: box-shadow 150ms ease;
+  transition: box-shadow 150ms ease;
+}
+
+.StripeElement--focus,
+.stripe-style-input:focus,
+.stripe-style-input:active {
+  box-shadow: 0 1px 3px 0 #cfd7df;
+}
+
+.StripeElement--webkit-autofill {
+  background-color: #fefde5 !important;
+}
+
+.stripe-style-input::placeholder {
+    color: #aab7c4;
+}
+
+.fieldset-label {
+    position: relative;
+    right: .5rem;
+}
+
+#payment-form .form-control,
+#card-element {
+    color: #000;
+    border: 1px solid #000;
+}
