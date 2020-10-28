@@ -57,8 +57,8 @@ def checkout(request):
 # To confirm it we verified that the form on the checkout page was submitted.
 # However, at the moment the form data doesn't actually go anywhere
 # since the checkout view doesn't have any handling for the post method.
-# Let's fix that in this video. So that when a user submits their payment information.
-# We also create the order in the database.
+# Let's fix that in this video. So that when a user submits their payment
+# information. We also create the order in the database.
 # And redirect them to a success page.
 # The first thing to do is obviously check whether the method is post.
 # That means we should also wrap the current code into an else block to
@@ -77,19 +77,21 @@ def checkout(request):
 # Then if its value is an integer we
 # know we're working with an item that doesn't have sizes.
 # So the quantity will just be the item data.
-# Otherwise, if the item has sizes. we'll iterate through each size and create a line item accordingly.
-# Finally this should theoretically never happen but just in case a product isn't found
-# we'll add an error message.
+# Otherwise, if the item has sizes. we'll iterate through each size and
+# create a line item accordingly.
+# Finally this should theoretically never happen but just in case a
+# product isn't found we'll add an error message.
 # Delete the empty order and return the user to the shopping bag page.
 # At the bottom here at the same indentation level as the for-loop.
-# We'll attach whether or not the user wanted to save their profile information to the session.
+# We'll attach whether or not the user wanted to save their profile
+# information to the session.
 # And then redirect them to a new page which we'll create in just a moment.
 # We'll name the new URL check out success.
 # And pass it the order number as an argument.
-# Also to get that we'll need to save the order here on line 31 so I'll add that.
-# If the order form isn't valid let's just attach a message letting them know
-# and they'll be sent back to the checkout page at the bottom of this view
-# with the form errors shown.
+# Also to get that we'll need to save the order here on line 31 so
+# I'll add that. If the order form isn't valid let's just attach a message
+# letting them know and they'll be sent back to the checkout page at the
+# bottom of this view with the form errors shown.
 
     if request.method == 'POST':
         bag = request.session.get('bag', {})

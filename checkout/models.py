@@ -59,12 +59,11 @@ class Order(models.Model):
 # which will just generate a random string of 32 characters we can use
 # as an order number.
 
-
-def _generate_order_number(self):
-    """
-    Generate a random, unique order number using UUID
-    """
-    return uuid.uuid4().hex.upper()
+    def _generate_order_number(self):
+        """
+        Generate a random, unique order number using UUID
+        """
+        return uuid.uuid4().hex.upper()
 
 # Also in this model let's write a method to update the total which we
 # can do using the aggregate function.
@@ -80,28 +79,26 @@ def _generate_order_number(self):
 # all we have to do is add the order total and the delivery cost
 # together and save the instance.
 
+    def update_total(self):
+        """
+        Update grand total each time a line item is added,
+        accounting for delivery costs.
+        """
+        # Also we're going to make a tiny adjustment to the order models update_total method
+        # by adding or zero to the end of this line that aggregates all the line item totals.
+        # This will prevent an error if we manually delete all the line items from an order
+        # by making sure that this sets the order total to zero instead of none.
+        # Without this, the next line would cause an error because it would try to determine if
+        # none is less than or equal to the delivery threshold.
+        # Now let's see if the whole checkout flow is working.
 
-def update_total(self):
-    """
-    Update grand total each time a line item is added,
-    accounting for delivery costs.
-    """
-    # Also we're going to make a tiny adjustment to the order models update_total method
-    # by adding or zero to the end of this line that aggregates all the line item totals.
-    # This will prevent an error if we manually delete all the line items from an order
-    # by making sure that this sets the order total to zero instead of none.
-    # Without this, the next line would cause an error because it would try to determine if
-    # none is less than or equal to the delivery threshold.
-    # Now let's see if the whole checkout flow is working.
-
-
-    self.order_total = self.lineitems.aggregate(Sum('lineitem_total'))['lineitem_total__sum'] or 0
-    if self.order_total < settings.FREE_DELIVERY_THRESHOLD:
-        self.delivery_cost = self.order_total * settings.STANDARD_DELIVERY_PERCENTAGE / 100
-    else:
-        self.delivery_cost = 0
-    self.grand_total = self.order_total + self.delivery_cost
-    self.save()
+        self.order_total = self.lineitems.aggregate(Sum('lineitem_total'))['lineitem_total__sum'] or 0
+        if self.order_total < settings.FREE_DELIVERY_THRESHOLD:
+            self.delivery_cost = self.order_total * settings.STANDARD_DELIVERY_PERCENTAGE / 100
+        else:
+            self.delivery_cost = 0
+        self.grand_total = self.order_total + self.delivery_cost
+        self.save()
 
 # Next I'll override the default save method.
 # So that if the order we're saving right now doesn't
@@ -109,23 +106,21 @@ def update_total(self):
 # We'll call the generate order number method.
 # And then execute the original save method.
 
-
-def save(self, *args, **kwargs):
-    """
-    Override the original save method to set the order number
-    if it hasn't been set already.
-    """
-    if not self.order_number:
-        self.order_number = self._generate_order_number()
-    super().save(*args, **kwargs)
+    def save(self, *args, **kwargs):
+        """
+        Override the original save method to set the order number
+        if it hasn't been set already.
+        """
+        if not self.order_number:
+            self.order_number = self._generate_order_number()
+        super().save(*args, **kwargs)
 
 # Finally for both of these models.
 # I'll add the standard string method,
 # returning just the order number for the order model.
 
-
-def __str__(self):
-    return self.order_number
+    def __str__(self):
+        return self.order_number
 
 
 # Whenever an order is saved.
@@ -165,7 +160,9 @@ def __str__(self):
 class OrderLineItem(models.Model):
     order = models.ForeignKey(Order, null=False, blank=False, on_delete=models.CASCADE, related_name='lineitems')
     product = models.ForeignKey(Product, null=False, blank=False, on_delete=models.CASCADE)
-    product_size = models.CharField(max_length=2, null=True, blank=True) # XS, S, M, L, XL
+    product_size = models.CharField(max_length=2, null=True, blank=True)
+
+    # XS, S, M, L, XL
     quantity = models.IntegerField(null=False, blank=False, default=0)
     lineitem_total = models.DecimalField(max_digits=6, decimal_places=2, null=False, blank=False, editable=False)
 
@@ -175,20 +172,19 @@ class OrderLineItem(models.Model):
 # The logic is simple though, we just need to multiply the
 # product price by the quantity for each line item.
 
-
-def save(self, *args, **kwargs):
-    """
-    Override the original save method to set the lineitem total
-    and update the order total.
-    """
-    self.lineitem_total = self.product.price * self.quantity
-    super().save(*args, **kwargs)
+    def save(self, *args, **kwargs):
+        """
+        Override the original save method to set the lineitem total
+        and update the order total.
+        """
+        self.lineitem_total = self.product.price * self.quantity
+        super().save(*args, **kwargs)
 
 
 # Finally for both of these models.
 # And the SKU of the product along with the order
 # number it's part of for each order line item.
 
-
 def __str__(self):
+
     return f'SKU {self.product.sku} on order {self.order.order_number}'
