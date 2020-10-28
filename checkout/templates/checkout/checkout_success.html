@@ -1,0 +1,49 @@
+<!-- This template is identical to the checkout page
+in terms of structure so I'll start by copying that. -->
+
+{% extends "base.html" %}
+{% load static %}
+<!--{% load bag_tools %} dont need this so we remove-->
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'checkout/css/checkout.css' %}">
+{% endblock %}
+
+{% block page_header %}
+    <div class="container header-container">
+        <div class="row">
+            <div class="col"></div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block content %}
+    <div class="overlay"></div>
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                <hr>
+                <h2 class="logo-font mb-4"><!--Change heading-->Thank you!</h2>
+                <hr>
+                <!-- add a small informative message about their order.-->
+                <p class="text-black">Your order information is below. A confirmation email will be sent to <strong>{{ order.email }}</strong>.</p>
+            </div>
+        </div>
+
+        <div class="row"><!-- Now I'll delete everything in the second row and replace it with an empty column. Where we will render the order summary -->
+            <div class="col-12 col-lg-7"></div>
+        </div>
+        <!-- I'll paste in a button for the user to now take a look at the latest deals in a new row. -->
+        <div class="row">
+			<div class="col-12 col-lg-7 text-right">
+				<a href="{% url 'products' %}?category=new_arrivals,deals,clearance" class="btn btn-black rounded-0 my-2">
+					<span class="icon mr-2">
+						<i class="fas fa-gifts"></i>
+					</span>
+					<span class="text-uppercase">Now check out the latest deals!</span>
+				</a>
+			</div>
+		</div>
+    </div>
+{% endblock %}
+
+<!-- Then get rid of the postloadjs block as there's no extra JavaScript in this template. -->

@@ -7,5 +7,11 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    path('', views.checkout, name='checkout')
+    path('', views.checkout, name='checkout'),
+
+# As I mentioned earlier it will take the order number as an argument.
+# Call the checkout success view.
+# And be named checkout_success.
+
+    path('checkout_success/<order_number>', views.checkout_success, name='checkout_success'),
 ]

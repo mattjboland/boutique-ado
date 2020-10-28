@@ -86,7 +86,16 @@ def update_total(self):
     Update grand total each time a line item is added,
     accounting for delivery costs.
     """
-    self.order_total = self.lineitems.aggregate(Sum('lineitem_total'))['lineitem_total__sum']
+    # Also we're going to make a tiny adjustment to the order models update_total method
+    # by adding or zero to the end of this line that aggregates all the line item totals.
+    # This will prevent an error if we manually delete all the line items from an order
+    # by making sure that this sets the order total to zero instead of none.
+    # Without this, the next line would cause an error because it would try to determine if
+    # none is less than or equal to the delivery threshold.
+    # Now let's see if the whole checkout flow is working.
+
+
+    self.order_total = self.lineitems.aggregate(Sum('lineitem_total'))['lineitem_total__sum'] or 0
     if self.order_total < settings.FREE_DELIVERY_THRESHOLD:
         self.delivery_cost = self.order_total * settings.STANDARD_DELIVERY_PERCENTAGE / 100
     else:
