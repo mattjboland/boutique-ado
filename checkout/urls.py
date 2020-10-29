@@ -10,11 +10,16 @@ from .webhooks import webhook
 urlpatterns = [
     path('', views.checkout, name='checkout'),
 
-    # As I mentioned earlier it will take the order number as an argument.
+    # This url will take the order number as an argument.
     # Call the checkout success view.
     # And be named checkout_success.
 
     path('checkout_success/<order_number>', views.checkout_success, name='checkout_success'),
+
+    # Then we need to create the url for the new view for cache_checkout_data in 
+    # views.py
+
+    path('cache_checkout_data/', views.cache_checkout_data, name='cache_checkout_data'),
 
     # Before we go much further let's get this thing listening.
     # The first thing we need to do is create a url for it.

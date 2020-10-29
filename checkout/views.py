@@ -29,7 +29,8 @@
 # Since stripe will require the amount to charge as an integer.
 
 
-from django.shortcuts import render, redirect, reverse, get_object_or_404
+from django.shortcuts import render, redirect, reverse, get_object_or_404, HttpResponse
+from django.views.decorators.http import require_POST
 from django.contrib import messages
 from django.conf import settings
 
@@ -39,6 +40,53 @@ from products.models import Product
 from bag.contexts import bag_contents
 
 import stripe
+import json
+
+# There's one small problem though and that's that we don't have a way to
+# determine in the webhook whether the user had the save info box checked.
+# Luckily there's a place we can add that to the payment intent
+# in a key called metadata, but we have to do it from the
+# server-side because the confirm card payment method doesn't support adding
+# it. It's not that hard though we can actually just write a simple view to
+# take care of it. let's head over to views.py and make a quick view called
+# cash_checkout_data. We'll expect only the post method here so I'll use
+# the require_POST decorator and let's import that, an HttpResponse up here
+# at the top. What's gonna happen here is before we call the confirm card
+# payment method in the stripe JavaScript. we'll make a post request to
+# this view and give it the client secret from the payment intent. If we
+# split that at the word secret the first part of it will be the payment
+# intent Id, so I'll store that in a variable called pid. Then I'll set
+# up stripe with the secret key so we can modify the payment intent.
+# To do it all we have to do is call stripe.PaymentIntent.modify
+# give it the pid, and tell it what we want to modify in our case we'll add
+# some metadata. Let's add the user who's placing the order.
+# Will add whether or not they wanted to save their information.
+# And most importantly we'll add a JSON dump of their shopping bag which we'll
+# use a little later. I'll also import JSON up here since we're using that to
+# add the bag to the metadata. After adding that stuff all we need to do is
+# return an HTTP response with the status of 200 for okay.
+# And let's wrap the whole thing in a try-except block.
+# And if anything goes wrong we'll just add a message and return a response
+# with the error message content and a status of 400 for bad request.
+# This way we can post to the view from JavaScript
+# and if everything goes ok we should get a 200 response.
+
+
+@require_POST
+def cache_checkout_data(request):
+    try:
+        pid = request.POST.get('client_secret').split('_secret')[0]
+        stripe.api_key = settings.STRIPE_SECRET_KEY
+        stripe.PaymentIntent.modify(pid, metadata={
+            'bag': json.dumps(request.session.get('bag', {})),
+            'save_info': request.POST.get('save_info'),
+            'username': request.user,
+        })
+        return HttpResponse(status=200)
+    except Exception as e:
+        messages.error(request, 'Sorry, your payment cannot be \
+            processed right now. Please try again later.')
+        return HttpResponse(content=e, status=400)
 
 
 # With those variables set and our settings saved.
