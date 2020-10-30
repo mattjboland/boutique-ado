@@ -22,6 +22,8 @@ from .models import UserProfile
 
 from .forms import UserProfileForm
 
+from checkout.models import Order
+
 
 def profile(request):
     """ Display the user's profile. """
@@ -48,6 +50,37 @@ def profile(request):
         'form': form,
         'orders': orders,
         'on_profile_page': True
+    }
+
+    return render(request, template, context)
+
+
+# We won't be able to open the template now since the order history URL
+# doesn't exist yet. So let's go create that view and its URL.
+# Back in the profile apps views.py I'll create a new view called order_history
+# And it will take in the order number as a parameter. The logic for it is
+# quite simple. First I'll get the order which means, of course, I'll need to
+# import the order model at the top. Then I'll add a message letting the user
+# know they're looking at a past order confirmation. And finally, I'll give it
+# a template and some context which will include the order number. It will use
+# the checkout success template since that template already has the layout for
+# rendering a nice order confirmation. And this way we don't have to redo it.
+# Instead, I've added another variable to the context called from_profile
+# So we can check in that template if the user got there via the order history
+# view.
+
+def order_history(request, order_number):
+    order = get_object_or_404(Order, order_number=order_number)
+
+    messages.info(request, (
+        f'This is a past confirmation for order number {order_number}. '
+        'A confirmation email was sent on the order date.'
+    ))
+
+    template = 'checkout/checkout_success.html'
+    context = {
+        'order': order,
+        'from_profile': True,
     }
 
     return render(request, template, context)

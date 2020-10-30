@@ -32,7 +32,8 @@ And that's where we'll maintain the CSS for this app. -->
                 <hr>
             </div>
         </div>
-        <div class="row"><!--We need to render the form in the profile template so let's head there and create a new row.
+        <div class="row">
+        <!--We need to render the form in the profile template so let's head there and create a new row.
                             Half of this page will be the profile and the other half will be the order history so I'll create two columns.
                             And then the first one I'll add a small paragraph heading and then a form.
                             As you might guess it will submit to the profile URL. And use the post method which we'll write in a bit.
@@ -52,7 +53,62 @@ And that's where we'll maintain the CSS for this app. -->
             </div>
             <div class="col-12 col-lg-6">
                 <p class="text-muted">Order History</p>
-                {{ orders }}
+                <!--In the profile template. The order history will be a simple responsive bootstrap table.
+I'll make it small and borderless.
+And it will have four columns in the head. Order number, date, items, and the order total.
+In the table body, we can iterate through the orders returned from the profile view.
+And generate a row for each one.
+The order number cell will be a link to a url we'll create in a moment called order history.
+And we'll pass it the order number.
+Also, we'll give this link a title so when you hover over it you can see the whole order number.
+And then to keep things condensed we'll pipe the order number into the built-in
+truncate characters filter to limit it to six characters.
+The order date in grand total are straightforward so I'll add those here.
+And now for the items, we'll make it an unordered unstyled list.
+For each item in the orders list of line-items.
+let's make a small text summary of it including the size if applicable.
+The product name, and the quantity purchased.-->
+                 <div class="order-history table-responsive">
+                    <table class="table table-sm table-borderless">
+                        <thead>
+                            <tr>
+                                <th>Order Number</th>
+                                <th>Date</th>
+                                <th>Items</th>
+                                <th>Order Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for order in orders %}
+                                <tr>
+                                    <td>
+                                    <!--There's only one small bit of CSS we'll need for this.
+                                        And that's just to give it a max height in case the user has a lot of orders.
+                                        This 416 pixels is the height of the form and the submit button in the adjacent column
+                                        so above that height, the order history area will have a scrollbar.-->
+                                        <a href="{% url 'order_history' order.order_number %}"
+                                        title="{{ order.order_number }}">
+                                            {{ order.order_number|truncatechars:6 }}
+                                        </a>
+                                    </td>
+                                    <td>{{ order.date }}</td>
+                                    <td>
+                                        <ul class="list-unstyled">
+                                            {% for item in order.lineitems.all %}
+                                                <li class="small">
+                                                    {% if item.product.has_sizes %}
+                                                        Size {{ item.product.size|upper }}
+                                                    {% endif %}{{ item.product.name }} x{{ item.quantity }}
+                                                </li>
+                                            {% endfor %}
+                                        </ul>
+                                    </td>
+                                    <td>${{ order.grand_total }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
