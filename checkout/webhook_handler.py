@@ -39,6 +39,16 @@
 
 from django.http import HttpResponse
 
+# to make this work we need a few new imports.
+# one is the send mail function from django.core. mail
+# And we'll need render_to_string from django.template.loader
+# And also our settings file from django.conf
+# With these imported, it's easy to send an email.
+
+from django.core.mail import send_mail
+from django.template.loader import render_to_string
+from django.conf import settings
+
 from .models import Order, OrderLineItem
 from products.models import Product
 
@@ -55,6 +65,64 @@ class StripeWH_Handler:
 
     def __init__(self, request):
         self.request = request
+
+    # To finalize our payment system. let's set it up to send users a confirmation email
+    # once their order is completed.
+    # The best place to do this is the webhook handler
+    # since at that point we know the payment has definitely been made.
+    # Since the only thing that can trigger it is a web hook from stripe.
+    # First let's write up a quick confirmation email.
+    # It'll be split into two text files in the checkout apps templates folder.
+    # One called confirmation_email_subject.
+    # And the other called confirmation_email_body.
+    # In the subject file let's just say Boutique Ado confirmation for order number.
+    # And then include the order number using standard django template syntax.
+    # These text files can use the exact same syntax as a django template.
+    # Because we'll pass them the order when we use them in a few minutes.
+    # Now let's write the body of the email.
+    # This can say whatever you want, but I'll use the order information to personalize it a bit.
+    # I'll include the order number, date, total, delivery costs, and grand total
+    # As well as telling the user where it will be shipped and how to contact the store
+    # if they need anything.
+    # With those two files saved let's head over to the webhook handler
+    # and write a new private method called _send_confirmation_email.
+    # Don't let this confuse you, even though it's taking in self since it's part of the class
+    # it's really not going to do anything special as all, we'll do is give it the order.
+    # It just starts with an underscore since it'll only be used inside this class.
+
+    def _send_confirmation_email(self, order):
+        """Send the user a confirmation email,
+            Let's get the customers email from the order and store it in a variable.
+            Then we can use the render_to_string method to render both the files we just created two strings.
+            With the first parameter being the file we want to render.
+            And the second being at context just like we would pass to a template.
+            This is how we'll be able to render the various context variables in the confirmation email.
+            I'll pass just the order to the subject.
+            And for the body, I'll pass the order as well as a contact email we'll add to the settings file in just a moment.
+            Now to finally send the email all we've got to do is use the send mail function.
+            Giving it the subject the body the email we want to send from.
+            And a list of emails were sending to, which in this case will be only the customer's email.
+            So we've got our send confirmation email method complete and it's just expecting
+            to be passed an order.
+            So to use it we can simply call it anywhere we want to send an email.
+            Again since we're doing this in the webhook handler.
+            The payment has definitely been completed at this point.
+            So we'll want to send an email no matter what."""
+
+        cust_email = order.email
+        subject = render_to_string(
+            'checkout/confirmation_emails/confirmation_email_subject.txt',
+            {'order': order})
+        body = render_to_string(
+            'checkout/confirmation_emails/confirmation_email_body.txt',
+            {'order': order, 'contact_email': settings.DEFAULT_FROM_EMAIL})
+
+        send_mail(
+            subject,
+            body,
+            settings.DEFAULT_FROM_EMAIL,
+            [cust_email]
+        )
 
     def handle_event(self, event):
         """
@@ -217,6 +285,11 @@ class StripeWH_Handler:
                 attempt += 1
                 time.sleep(1)
         if order_exists:
+            self._send_confirmation_email(order)
+
+            """If we found the order in the database because it was already created by the form.
+            Let's send it just before returning that response to stripe"""
+
             return HttpResponse(
                 content=f'Webhook received: {event["type"]} | SUCCESS: Verified order already in database',
                 status=200)
@@ -269,6 +342,14 @@ class StripeWH_Handler:
                 return HttpResponse(
                     content=f'Webhook received: {event["type"]} | ERROR: {e}',
                     status=500)
+
+    # If the order was created by the webhook handler I'll send the email at
+    # the bottom here just before returning that response to stripe.
+    # In both cases whether the order already existed or whether the webhook
+    # handler just created it. We'll pass it along to our new method in order
+    # to send the email.
+
+        self._send_confirmation_email(order)
         return HttpResponse(
             content=f'Webhook received: {event["type"]} | SUCCESS: Created order in webhook',
             status=200)

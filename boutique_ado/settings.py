@@ -213,3 +213,7 @@ STRIPE_CURRENCY = 'usd'
 STRIPE_PUBLIC_KEY = os.getenv('STRIPE_PUBLIC_KEY', '')
 STRIPE_SECRET_KEY = os.getenv('STRIPE_SECRET_KEY', '')
 STRIPE_WH_SECRET = os.getenv('STRIPE_WH_SECRET', '')
+
+# The last thing we need to do is add the DEFAULT_FROM_EMAIL to settings.py
+
+DEFAULT_FROM_EMAIL = 'boutiqueado@example.com'
