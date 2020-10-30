@@ -52,7 +52,10 @@ And these two divs at the top. -->
                 <hr class="mt-1 mb-3">
             </div>
         </div>
-        {% if grand_total %}
+        {% if grand_total and not on_profile_page %}<!--And here where we're checking if there's a grand total, let's also check that we
+                                                        are not on the profile page.
+                                                        This simple change will make it so the shopping bag
+                                                        only shows up in the success message when we're not on the profile page.-->
             <p class="logo-font bg-white text-black py-1">Your Bag ({{ product_count }})</p>
             <div class="bag-notification-wrapper">
                 {% for item in bag_items %}

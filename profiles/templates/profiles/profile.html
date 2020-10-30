@@ -32,7 +32,33 @@ And that's where we'll maintain the CSS for this app. -->
                 <hr>
             </div>
         </div>
-        <!--Then in the template, I'll just render the profile.
-            And we'll see the user name printed out.-->
-        {{ profile }}
+        <div class="row"><!--We need to render the form in the profile template so let's head there and create a new row.
+                            Half of this page will be the profile and the other half will be the order history so I'll create two columns.
+                            And then the first one I'll add a small paragraph heading and then a form.
+                            As you might guess it will submit to the profile URL. And use the post method which we'll write in a bit.
+                            I'll give it an id of profile-update-form so we can easily identify it.
+                            And inside I'll render it as a crispy form.
+                            Lastly we need a submit' button and that will look just like our other buttons
+                            and float on the right of the column.
+                            We might as well make the heading for the other column also while we're at it.
+                            And for now, just spit out all the users orders if there are any. So we can make sure that's working.-->
+            <div class="col-12 col-lg-6">
+                <p class="text-muted">Default Delivery Information</p>
+                <form class="mt-3" action="{% url 'profile' %}" method="POST" id="profile-update-form">
+                    {% csrf_token %}
+                    {{ form|crispy }}
+                    <button class="btn btn-black rounded-0 text-uppercase float-right">Update Information</button>
+                </form>
+            </div>
+            <div class="col-12 col-lg-6">
+                <p class="text-muted">Order History</p>
+                {{ orders }}
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block postloadjs %}
+    {{ block.super }}
+    <script type="text/javascript" src="{% static 'profiles/js/countryfield.js' %}"></script>
 {% endblock %}
