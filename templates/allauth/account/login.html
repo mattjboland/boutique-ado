@@ -5,9 +5,15 @@
 
 {% block head_title %}{% trans "Sign In" %}{% endblock %}
 
-{% block content %}
+{% block inner_content %} <!--And then move to the login template and rename its content block to inner content.
+Now if I go back to the site, you can see the login templates inner content block
+has replaced the inner content block in the account folders base.html
+While that files block called content has replaced the content block in the main base.html.-->
 
-<h1>{% trans "Sign In" %}</h1>
+<hr>
+<h2 class="logo-font mb-4">{% trans "Sign In" %}</h2><!--Then I'll adjust the header slightly by making it an h2
+giving it our own classes and adding a couple horizontal rules around it.-->
+<hr>
 
 {% get_providers as socialaccount_providers %}
 
@@ -35,12 +41,18 @@ for a {{ site_name }} account and sign in below:{% endblocktrans %}</p>
 
 <form class="login" method="POST" action="{% url 'account_login' %}">
   {% csrf_token %}
-  {{ form.as_p }}
+  {{ form|crispy }}<!--First we can use crispy forms to render the form instead of rendering it as a paragraph.-->
   {% if redirect_field_value %}
   <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
   {% endif %}
-  <a class="button secondaryAction" href="{% url 'account_reset_password' %}">{% trans "Forgot Password?" %}</a>
+  <!--finally at the bottom, I'll add a home button.
+Wrap the forgot password link in a paragraph.
+And move it down to the bottom.-->
+    <a class="btn btn-outline-black rounded-0" href="{% url 'home' %}">Home</a>
   <button class="primaryAction" type="submit">{% trans "Sign In" %}</button>
+  <p class="mt-2">
+    <a class="button secondaryAction" href="{% url 'account_reset_password' %}">{% trans "Forgot Password?" %}</a>
+  </p>
 </form>
 
 {% endblock %}

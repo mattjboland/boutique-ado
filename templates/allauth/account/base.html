@@ -1,1 +1,46 @@
 {% extends "base.html" %}
+
+<!--I needed to actually inspect the page and delete the header element because the
+logout button was hidden behind it.
+This is because the Django allauth templates don't have the correct padding on them.
+And also they haven't been styled to match the rest of the site yet.
+In this video we'll customize these templates and then begin integrating
+user profiles throughout the application.
+First let's see what we are working with.
+This is what we've currently got on the login page for example.
+Now take a look in the allauth directory inside our project-level templates folder.
+You'll see here that allauth actually has its own base template with the content block just like ours.
+Then inside the accounts folder, there's another base template which extends it.
+So what happens here is this one extends the main allauth base.
+And then login, for example, extends the base inside the account folder.
+You'll see login has its own content block
+which will be passed through to the main allauth base template to replace that block.
+We want all these templates in the account folder to take on our own
+styling so an easy way to do that is to modify the base template they all extend.
+Instead of just passing their content blocks right through to the main allauth base template,
+let's instead wrap them in our own markup and just adjust the names of the blocks.
+Here's an example, in the account folders base.html I'll open a new block called content.
+This is going to replace the main allauth base templates content block.
+And inside it, I'll add our header container which has the proper padding
+the overlay to make the background white
+and then a row and a 50% width column.
+Inside the column, I'll create a div with a class of allauth form inner content.
+The issue with this is that this block is now called content, which means the
+login templates content block will just replace it so the change won't have any effect.
+However, if we were to rename the login templates content block
+to something else, we could stick it inside this div instead.
+I'll open a new block here called inner content.-->
+
+{% block content %}
+    <div class="container header-container">
+        <div class="overlay"></div>
+        <div class="row">
+            <div class="col-12 col-md-6">
+                <div class="allauth-form-inner-content">
+                    {% block inner_content %}
+                    {% endblock %}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
