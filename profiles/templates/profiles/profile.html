@@ -1,0 +1,35 @@
+<!-- finally we'll create the profile template.
+I'll copy the checkout template this time and make a couple minor adjustments.
+First removing bag tools.
+Then changing the extra CSS file to one for the profiles app.
+And finally removing everything else except for the header which I'll change to my profile
+Lastly I'll create an empty CSS file in the appropriate directory.
+And that's where we'll maintain the CSS for this app. -->
+
+  
+{% extends "base.html" %}
+{% load static %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'profiles/css/profile.css' %}">
+{% endblock %}
+
+{% block page_header %}
+    <div class="container header-container">
+        <div class="row">
+            <div class="col"></div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block content %}
+    <div class="overlay"></div>
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                <hr>
+                <h2 class="logo-font mb-4">My Profile</h2>
+                <hr>
+            </div>
+        </div>
+{% endblock %}
