@@ -1,0 +1,60 @@
+<!-- The last thing we need is the add product template, 
+which I'll create here alongside products.html.
+It'll have a similar look to the checkout page.
+So let's copy all that code and we can start there as a base.
+
+We can get rid of all the JavaScript at the bottom for now as well as the loading spinner.
+And everything in the second row in the main page container.
+Now I'll change the header to product management.
+Make this column 50% width on medium and larger screens.
+And add a subheader specific to this being the ad product page.
+We also won't need the extra CSS block or the bag tools so let's get rid of those.-->
+
+{% extends "base.html" %}
+{% load static %}
+
+{% block page_header %}
+    <div class="container header-container">
+        <div class="row">
+            <div class="col"></div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block content %}
+    <div class="overlay"></div>
+    <div class="container">
+        <div class="row">
+            <div class="col-12 col-md-6">
+                <hr>
+                <h2 class="logo-font mb-4">Product Management</h2>
+                <h5 class="text-muted">Add a Product</h5>
+                <hr>
+            </div>
+        </div>
+
+        <!-- Now we need another 50% width column in the
+            second row which will render our product form as a nicely styled crispy form.
+            Of course we need to wrap this inside a form element. And we'll give it a method of post.
+            An action URL of add_product.
+            And a class of form with a bit of margin on the bottom.
+            We also need to add the encoding type attribute on this form.
+            Since it will potentially be submitting an image file, and without this the image
+            won't be uploaded properly.
+            Finally I'll add the CSRF token, a submit button, and a cancel button to go back to the products page.
+            And these will both be aligned right at the bottom of the form. -->
+
+        <div class="row">
+            <div class="col-12 col-md-6">
+                <form method="POST" action="{% url 'add_product' %}" class="form mb-2" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    {{ form | crispy }}
+                    <div class="text-right">
+                        <a class="btn btn-outline-black rounded-0" href="{% url 'products' %}">Cancel</a>
+                        <button class="btn btn-black rounded-0" type="submit">Add Product</button>
+                    </div>
+                </form>
+            </div>            
+        </div>
+    </div>
+{% endblock %}

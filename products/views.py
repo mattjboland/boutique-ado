@@ -4,6 +4,7 @@ from django.db.models import Q
 from django.db.models.functions import Lower
 
 from .models import Product, Category
+from .forms import ProductForm
 
 # Create your views here.
 
@@ -68,3 +69,24 @@ def product_detail(request, product_id):
     }
 
     return render(request, 'products/product_detail.html', context)
+
+
+# With the product form ready to go.
+# We can now create a view for store owners to add products to the store.
+# In the product apps views.py, I'll call this view add_product
+# And for now, all it will do is render an empty instance of our form so we can see how it looks.
+# It will use a new template which we'll create in a moment called add_product
+# And will include a context including the product form.
+# This also means we need to import product form, at the top.
+# Then create a URL for it.
+
+
+def add_product(request):
+    """ Add a product to the store """
+    form = ProductForm()
+    template = 'products/add_product.html'
+    context = {
+        'form': form,
+    }
+
+    return render(request, template, context)
