@@ -219,10 +219,10 @@ class StripeWH_Handler:
         # We should add this functionality to the webhook handler we wrote as well.
         # So that if the checkout view fails we can depend on the webhook handler to do all the same things.
         # Here in the handle payment intent succeeded method inside our web handler
-        # remember that we added that handy key in the payment intent called metadata
-        # which contains the username of the user that placed the order.
-        # It also contains whether or not they wanted to save their info so let's handle that here.
-        # Well begin with profile set to none.
+        # remember that we added that handy key in the payment intent called
+        # metadata which contains the username of the user that placed the order.
+        # It also contains whether or not they wanted to save their info so
+        # let's handle that here. Well begin with profile set to none.
         # Just so we know we can still allow anonymous users to checkout.
         # And you'll see why this matters in a moment.
         # In the meantime, we can get the username from intent.metadata.username
@@ -239,15 +239,14 @@ class StripeWH_Handler:
         username = intent.metadata.username
         if username != 'AnonymousUser':
             profile = UserProfile.objects.get(user__username=username)
-            if save_info:
-                profile.default_phone_number = shipping_details.phone
-                profile.default_country = shipping_details.address.country
-                profile.default_postcode = shipping_details.address.postal_code
-                profile.default_town_or_city = shipping_details.address.city
-                profile.default_street_address1 = shipping_details.address.line1
-                profile.default_street_address2 = shipping_details.address.line2
-                profile.default_county = shipping_details.address.state
-                profile.save()
+            profile.default_phone_number = shipping_details.phone
+            profile.default_country = shipping_details.address.country
+            profile.default_postcode = shipping_details.address.postal_code
+            profile.default_town_or_city = shipping_details.address.city
+            profile.default_street_address1 = shipping_details.address.line1
+            profile.default_street_address2 = shipping_details.address.line2
+            profile.default_county = shipping_details.address.state
+            profile.save()
 
         order_exists = False
         # Instead of just immediately going to create the order if it's
@@ -343,11 +342,11 @@ class StripeWH_Handler:
                     content=f'Webhook received: {event["type"]} | ERROR: {e}',
                     status=500)
 
-    # If the order was created by the webhook handler I'll send the email at
-    # the bottom here just before returning that response to stripe.
-    # In both cases whether the order already existed or whether the webhook
-    # handler just created it. We'll pass it along to our new method in order
-    # to send the email.
+        # If the order was created by the webhook handler I'll send the email at
+        # the bottom here just before returning that response to stripe.
+        # In both cases whether the order already existed or whether the webhook
+        # handler just created it. We'll pass it along to our new method in order
+        # to send the email.
 
         self._send_confirmation_email(order)
         return HttpResponse(
