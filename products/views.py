@@ -82,10 +82,33 @@ def product_detail(request, product_id):
 
 
 def add_product(request):
-    """ Add a product to the store """
-    form = ProductForm()
-    template = 'products/add_product.html'
-    context = {
+    """ Add a product to the store Let's write the post handler for the add product view.
+        In views.py in the products app if the request method is post.
+        We'll instantiate a new instance of the product form from request.post and include request .files also
+        In order to make sure to capture in the image of the product if one was submitted.
+        Then we can simply check if form.is_valid. And if so we'll save it.
+        Add a simple success message.
+        And redirect to the same view.
+        If there are any errors on the form.
+        We'll attach a generic error message telling the user to check their form
+        which will display the errors.
+        Now I'll just move this empty form instantiation here into an else block
+        so it doesn't wipe out the form errors.
+        On that note, we should take a moment and make that same change on our profile form
+        since I just realized it'll have that same issue."""
+    if request.method == 'POST':
+        form = ProductForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Successfully added product!')
+            return redirect(reverse('add_product'))
+        else:
+            messages.error(request, 'Failed to add product. Please ensure the form is valid.')
+    else:
+        form = ProductForm()
+
+        template = 'products/add_product.html'
+        context = {
         'form': form,
     }
 
