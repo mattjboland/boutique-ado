@@ -99,9 +99,9 @@ def add_product(request):
     if request.method == 'POST':
         form = ProductForm(request.POST, request.FILES)
         if form.is_valid():
-            form.save()
+            product = form.save()
             messages.success(request, 'Successfully added product!')
-            return redirect(reverse('add_product'))
+            return redirect(reverse('product_detail', args=[product.id]))
         else:
             messages.error(request, 'Failed to add product. Please ensure the form is valid.')
     else:
@@ -162,3 +162,19 @@ def edit_product(request, product_id):
     }
 
     return render(request, template, context)
+
+def delete_product(request, product_id):
+    """ Delete a product from the store Now moving to the view it'll be just like the edit view and that it'll take the request
+        and the product id to be deleted.
+        But this one won't require a post handler.
+        We can start by getting the product just like we do above.
+        With get_object_or_404
+        And then we'll just call product.delete.
+        Add a success message.
+        And redirect back to the products page.
+        In this way whenever someone makes a request to products/delete/ some product id.
+        That product will be deleted."""
+    product = get_object_or_404(Product, pk=product_id)
+    product.delete()
+    messages.success(request, 'Product deleted!')
+    return redirect(reverse('products'))

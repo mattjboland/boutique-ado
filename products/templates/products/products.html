@@ -82,6 +82,19 @@
                                             {% else %}
                                                 <small class="text-muted">No Rating</small>
                                             {% endif %}
+                                            <!-- I'm going to add edit and delete links in two places.
+                                                First on the product cards on the all products page.
+                                                And second on the product detail pages.
+                                                Let's start with the products template.
+                                                Right after the rating, I'll add an if statement to determine if the user is a
+                                                superuser and if so will render two small links for editing and deleting products.
+                                                Now I'll copy this and add it under the rating in the product detail template as well. -->
+                                            {% if request.user.is_superuser %}
+                                                <small class="ml-3">
+                                                    <a href="{% url 'edit_product' product.id %}">Edit</a> | 
+                                                    <a class="text-danger" href="{% url 'delete_product' product.id %}">Delete</a>
+                                                </small>
+                                            {% endif %}
                                         </div>
                                     </div>
                                 </div>
