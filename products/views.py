@@ -1,5 +1,17 @@
 from django.shortcuts import render, redirect, reverse, get_object_or_404
 from django.contrib import messages
+
+# Let's go to the product apps views.py and import a new item from django.contrib.auth.decorators
+# called login_required
+# Decorators are special functions that wrap around another function
+# and return a new one with some additional functionality.
+# In the case of login_required for example, wherever we use this decorator
+# it will make Django first check whether the user is logged in. Before executing the view.
+# And if not it'll redirect them to the login page.
+# To use it we can use @login_required on the line immediately above each view we
+# want to decorate.
+from django.contrib.auth.decorators import login_required
+
 from django.db.models import Q
 from django.db.models.functions import Lower
 
@@ -74,13 +86,13 @@ def product_detail(request, product_id):
 # With the product form ready to go.
 # We can now create a view for store owners to add products to the store.
 # In the product apps views.py, I'll call this view add_product
-# And for now, all it will do is render an empty instance of our form so we can see how it looks.
-# It will use a new template which we'll create in a moment called add_product
+# And for now, all it will do is render an empty instance of our form so we
+# can see how it looks. It will use a new template which we'll create in a moment called add_product
 # And will include a context including the product form.
 # This also means we need to import product form, at the top.
 # Then create a URL for it.
 
-
+@login_required
 def add_product(request):
     """ Add a product to the store Let's write the post handler for the add product view.
         In views.py in the products app if the request method is post.
@@ -95,7 +107,19 @@ def add_product(request):
         Now I'll just move this empty form instantiation here into an else block
         so it doesn't wipe out the form errors.
         On that note, we should take a moment and make that same change on our profile form
-        since I just realized it'll have that same issue."""
+        since I just realized it'll have that same issue.
+        
+        We only want superusers to have access
+        to the add, edit, and delete views.
+        We can do this with another decorator or even write our own custom one.
+        But to keep it simple I'll just add an if statement in each view right at the top
+        So in the add product view for example.
+        if the user is not a superuser.
+        let's just redirect them back to the home page with the message that only store owners can do that."""
+    if not request.user.is_superuser:
+        messages.error(request, 'Sorry, only store owners can do that.')
+        return redirect(reverse('home'))
+
     if request.method == 'POST':
         form = ProductForm(request.POST, request.FILES)
         if form.is_valid():
@@ -114,6 +138,7 @@ def add_product(request):
 
     return render(request, template, context)
 
+@login_required
 def edit_product(request, product_id):
     """ Edit a product in the store We've given store owners the ability to add products to our store.
         So now let's give them the ability to update them.
@@ -142,6 +167,10 @@ def edit_product(request, product_id):
         If the form is valid we'll save it
         Add a success message
         And then redirect to the product detail page using the product id."""
+    if not request.user.is_superuser:
+        messages.error(request, 'Sorry, only store owners can do that.')
+        return redirect(reverse('home'))
+
     product = get_object_or_404(Product, pk=product_id)
     if request.method == 'POST':
         form = ProductForm(request.POST, request.FILES, instance=product)
@@ -163,6 +192,7 @@ def edit_product(request, product_id):
 
     return render(request, template, context)
 
+@login_required
 def delete_product(request, product_id):
     """ Delete a product from the store Now moving to the view it'll be just like the edit view and that it'll take the request
         and the product id to be deleted.
@@ -174,6 +204,10 @@ def delete_product(request, product_id):
         And redirect back to the products page.
         In this way whenever someone makes a request to products/delete/ some product id.
         That product will be deleted."""
+    if not request.user.is_superuser:
+        messages.error(request, 'Sorry, only store owners can do that.')
+        return redirect(reverse('home'))
+
     product = get_object_or_404(Product, pk=product_id)
     product.delete()
     messages.success(request, 'Product deleted!')
