@@ -25,7 +25,18 @@
             <div class="col-12 col-md-6">
                 <form method="POST" action="{% url 'edit_product' product.id %}" class="form mb-2" enctype="multipart/form-data">
                     {% csrf_token %}
-                    {{ form | crispy }}
+                    <!-- So it looks almost perfect except for one thing
+                        and that's that we're still getting the label for it because crispy forms is rendering it.
+                        That can easily be fixed by adding an if statement to the template
+                        so that we will only render the field as a crispy field
+                        if it's not our custom image widget. -->
+                    {% for field in form %}
+                        {% if field.name != 'image' %}
+                            {{ field | as_crispy_field }}
+                        {% else %}
+                            {{ field }}
+                        {% endif %}
+                    {% endfor %}
                     <div class="text-right">
                         <a class="btn btn-outline-black rounded-0" href="{% url 'products' %}">Cancel</a>
                         <button class="btn btn-black rounded-0" type="submit">Update Product</button>
@@ -34,4 +45,16 @@
             </div>            
         </div>
     </div>
+{% endblock %}
+
+<!-- Copied into here aswell -->
+
+{% block postloadjs %}
+    {{ block.super }}
+    <script type="text/javascript">
+        $('#new-image').change(function() {
+            var file = $('#new-image')[0].files[0];
+            $('#filename').text(`Image will be set to: ${file.name}`);
+        });
+    </script>
 {% endblock %}
