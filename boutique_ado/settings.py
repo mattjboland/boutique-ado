@@ -27,7 +27,7 @@ SECRET_KEY = '@)wz%mww13upz6xkz4qsc+#pay)azboruw)um&@8%_8==jj*r8'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['mattjboland-boutique-ado.herokuapp.com', 'localhost']
 
 
 # Application definition
