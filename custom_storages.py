@@ -10,7 +10,8 @@ As well as the s3boto3 storage class from django storages which we just installe
 Now I can create a custom class called static storage.
 Which will inherit the one from django storages. Giving it all its functionality.
 And tell it that we want to store static files in a location from the settings that we'll define in just a moment.
-I'll copy this to another class for media files which will have an identical structure."""
+I'll copy this to another class for media files which will have an identical structure.
+Had an issue deploy so added this lie to retry"""
 
 
 class StaticStorage(S3Boto3Storage):
