@@ -1,0 +1,51 @@
+<!-- Now that all the functionality is done let's tidy up that image field a bit.
+    This is what we've currently got which looks a bit sloppy.
+    But it's a bit more complex than you might think to style a file chooser field like this.
+    If you look in the Django admin at an existing product that has an image.
+    You'll see it has this clunky looking widget with the checkbox
+    and an unstyled button and a link to some image.
+    And in general, it's probably fine for an admin interface.
+    But in terms of the UI, it really needs some work.
+    So Django forms work with what are called widgets
+    and this little widget that handles the image field on our model is called a clearable file input.
+    Conveniently because Django is just Python we can inherit this class and customize it.
+    To show you how this will work let's go to the Django github.
+    Go to the Django folder.
+    Forms, then open widgets.py
+    And search for ClearableFileInput
+    Here we can see the actual class definition with some attributes and methods we can override.
+    In particular the template.
+    Let's go to the templates folder here, and open that file too because we'll need it in a second.
+    Back in our code in a new file called widgets.py
+    I'm going to import the ClearableFileInput from django.form.widgets
+    And also gettext_lazy as underscore which will be used for translation.
+    This actually isn't even necessary in our case
+    I'm just doing it to keep our custom class as close to the original as possible.
+    With those imported, I'll create a new class called CustomClearableFileInput
+    Which inherits the built-in one.
+    I'll override the clear checkbox label
+    the initial text the input text and the template name With our own values.
+    Now inside the product apps templates folder I'll create that new template.
+    Making sure its name and location matches what's in our class
+    Inside the template, I'll copy everything in the built-in one from django so we can
+    make some slight changes to it.
+    This way we have basically everything in the original from a functional standpoint.
+    But we can make our own visual changes. -->
+
+{% if widget.is_initial %}
+    <p>{{ widget.initial_text }}:</p>
+    <a href="{{ widget.value.url }}">
+        <img width="96" height="96" class="rounded shadow-sm" src="{{ widget.value.url }}">
+    </a>
+    {% if not widget.required %}
+        <div class="custom-control custom-checkbox mt-2">
+            <input class="custom-control-input" type="checkbox" name="{{ widget.checkbox_name }}" id="{{ widget.checkbox_id }}">
+            <label class="custom-control-label text-danger" for="{{ widget.checkbox_id }}">{{ widget.clear_checkbox_label }}</label>
+        </div>
+    {% endif %}<br>
+    {{ widget.input_text }}
+{% endif %}
+<span class="btn btn-black rounded-0 btn-file">
+    Select Image <input id="new-image" type="{{ widget.type }}" name="{{ widget.name }}"{% include "django/forms/widgets/attrs.html" %}>
+</span>
+<strong><p class="text-danger" id="filename"></p></strong>

@@ -13,4 +13,11 @@ urlpatterns = [
     # Which will cause that view to throw an error.
 
     path('add/', views.add_product, name='add_product'),
+
+    # With the view complete let's go to urls.py and create the edit_product URL.
+    # It'll have a path of edit /<int:product_id> where product_id is an integer just like above.
+    # It will return the edit_product view. And have a name to match.
+
+    path('edit/<int:product_id>/', views.edit_product, name='edit_product'),
+    path('delete/<int:product_id>/', views.delete_product, name='delete_product'),
 ]
