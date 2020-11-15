@@ -1,5 +1,5 @@
-from django.conf import settings
-from storages.backends.s3boto3 import S3Boto3Storage
+# from django.conf import settings
+# from storages.backends.s3boto3 import S3Boto3Storage
 
 """The next step is to tell django that in production
 we want to use s3 to store our static files whenever someone runs collectstatic.
@@ -14,9 +14,9 @@ I'll copy this to another class for media files which will have an identical str
 Had an issue deploy so added this lie to retry"""
 
 
-class StaticStorage(S3Boto3Storage):
-    location = settings.STATICFILES_LOCATION
+# class StaticStorage(S3Boto3Storage):
+#     location = settings.STATICFILES_LOCATION
 
 
-class MediaStorage(S3Boto3Storage):
-    location = settings.MEDIAFILES_LOCATION
+# class MediaStorage(S3Boto3Storage):
+#     location = settings.MEDIAFILES_LOCATION
