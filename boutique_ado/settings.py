@@ -207,7 +207,21 @@ Because if they end up in version control someone could use them to store
 or move data through your s3 bucket.
 And Amazon would bill your credit card for it."""
 
+"""We've now got our static files working correctly so let's handle media files.
+First though I'd like to add one optional setting to settings.py called
+AWS_S3_OBJECT_PARAMETERS
+This will tell the browser that it's okay to cache static files for a long time
+since they don't change very often, and this will improve performance for our users.
+Everything else we'll need to do is outside of our code.
+So let's add that and commit it and push it up to github so it will deploy to Heroku."""
+
 if 'USE_AWS' in os.environ:
+    # Cache control
+    AWS_S3_OBJECT_PARAMETERS = {
+        'Expires': 'Thu, 31 Dec 2099 20:00:00 GMT',
+        'CacheControl': 'max-age=94608000',
+    }
+
     # Bucket Config
     AWS_STORAGE_BUCKET_NAME = 'ckz8780-boutique-ado'
     AWS_S3_REGION_NAME = 'us-east-1'
