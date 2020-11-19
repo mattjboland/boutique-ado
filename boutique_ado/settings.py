@@ -229,50 +229,50 @@ if 'USE_AWS' in os.environ:
     AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY')
     AWS_S3_CUSTOM_DOMAIN = f'{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com'
 
-"""Back in our settings file.
-We need to tell django where our static files will be coming from in production.
-Which is going to be our bucket name.
-.s3.amazonaws.com
-And notice I'm formatting this as an F string so my
-bucket name from above will be interpreted and added to generate the appropriate URL"""
+    """Back in our settings file.
+    We need to tell django where our static files will be coming from in production.
+    Which is going to be our bucket name.
+    .s3.amazonaws.com
+    And notice I'm formatting this as an F string so my
+    bucket name from above will be interpreted and added to generate the appropriate URL"""
 
-# Static and media files
-"""The last step then is to go to Settings.py
-Tell it that for static file storage we want to use our storage class we just created.
-And that the location it should save static files is a folder called static.
-And then do the same thing for media files by using the default file storage.
-And media files location settings."""
+    # Static and media files
+    """The last step then is to go to Settings.py
+    Tell it that for static file storage we want to use our storage class we just created.
+    And that the location it should save static files is a folder called static.
+    And then do the same thing for media files by using the default file storage.
+    And media files location settings."""
 
-STATICFILES_STORAGE = 'custom_storages.StaticStorage'
-STATICFILES_LOCATION = 'static'
-DEFAULT_FILE_STORAGE = 'custom_storages.MediaStorage'
-MEDIAFILES_LOCATION = 'media'
+    STATICFILES_STORAGE = 'custom_storages.StaticStorage'
+    STATICFILES_LOCATION = 'static'
+    DEFAULT_FILE_STORAGE = 'custom_storages.MediaStorage'
+    MEDIAFILES_LOCATION = 'media'
 
-# Override static and media URLs in production
-"""We also need to override and explicitly set the URLs for static and media
-files. Using our custom domain and the new locations."""
+    # Override static and media URLs in production
+    """We also need to override and explicitly set the URLs for static and media
+    files. Using our custom domain and the new locations."""
 
-STATIC_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/{STATICFILES_LOCATION}/'
-MEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/{MEDIAFILES_LOCATION}/'
+    STATIC_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/{STATICFILES_LOCATION}/'
+    MEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/{MEDIAFILES_LOCATION}/'
 
-"""What happens now is when our project is deployed to Heroku.
-Heroku will run python3 manage.py collectstatic during the build process.
-Which will search through all our apps and project folders looking for static
-files. And it will use the s3 custom domain setting here
-in conjunction with our custom storage classes that tell it the location at
-that URL. Where we'd like to save things.
-So in effect when the USE_AWS setting is true.
-Whenever collectstatic is run.
-Static files will be collected into a static folder in our s3 bucket.
-The beauty of this is that it's all automatic.
-To make sure it works, all we have to do is add all these changes. Commit them.
-And then issue a git push. Which will trigger an automatic deployment to
-Heroku. With that done if we look at the build log.
-We can see that all the static files were collected successfully.
-And if we now go to s3.
-We can see we have a static folder in our bucket with all our static files in
-it. In the next video, we'll upload our product images to s3
-And put the finishing touches on our deployment."""
+    """What happens now is when our project is deployed to Heroku.
+    Heroku will run python3 manage.py collectstatic during the build process.
+    Which will search through all our apps and project folders looking for static
+    files. And it will use the s3 custom domain setting here
+    in conjunction with our custom storage classes that tell it the location at
+    that URL. Where we'd like to save things.
+    So in effect when the USE_AWS setting is true.
+    Whenever collectstatic is run.
+    Static files will be collected into a static folder in our s3 bucket.
+    The beauty of this is that it's all automatic.
+    To make sure it works, all we have to do is add all these changes. Commit them.
+    And then issue a git push. Which will trigger an automatic deployment to
+    Heroku. With that done if we look at the build log.
+    We can see that all the static files were collected successfully.
+    And if we now go to s3.
+    We can see we have a static folder in our bucket with all our static files in
+    it. In the next video, we'll upload our product images to s3
+    And put the finishing touches on our deployment."""
 
 # Stripe
 
