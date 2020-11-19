@@ -209,8 +209,8 @@ And Amazon would bill your credit card for it."""
 
 if 'USE_AWS' in os.environ:
     # Bucket Config
-    AWS_STORAGE_BUCKET_NAME = 'mattjboland-boutique-ado'
-    AWS_S3_REGION_NAME = 'eu-west-1'
+    AWS_STORAGE_BUCKET_NAME = 'ckz8780-boutique-ado'
+    AWS_S3_REGION_NAME = 'us-east-1'
     AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID')
     AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY')
     AWS_S3_CUSTOM_DOMAIN = f'{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com'
@@ -235,29 +235,29 @@ DEFAULT_FILE_STORAGE = 'custom_storages.MediaStorage'
 MEDIAFILES_LOCATION = 'media'
 
 # Override static and media URLs in production
-"""We also need to override and explicitly set the URLs for static and media files.
-Using our custom domain and the new locations."""
+"""We also need to override and explicitly set the URLs for static and media
+files. Using our custom domain and the new locations."""
 
 STATIC_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/{STATICFILES_LOCATION}/'
 MEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/{MEDIAFILES_LOCATION}/'
 
 """What happens now is when our project is deployed to Heroku.
 Heroku will run python3 manage.py collectstatic during the build process.
-Which will search through all our apps and project folders looking for static files.
-And it will use the s3 custom domain setting here
-in conjunction with our custom storage classes that tell it the location at that URL.
-Where we'd like to save things.
+Which will search through all our apps and project folders looking for static
+files. And it will use the s3 custom domain setting here
+in conjunction with our custom storage classes that tell it the location at
+that URL. Where we'd like to save things.
 So in effect when the USE_AWS setting is true.
 Whenever collectstatic is run.
 Static files will be collected into a static folder in our s3 bucket.
 The beauty of this is that it's all automatic.
 To make sure it works, all we have to do is add all these changes. Commit them.
-And then issue a git push. Which will trigger an automatic deployment to Heroku.
-With that done if we look at the build log.
+And then issue a git push. Which will trigger an automatic deployment to
+Heroku. With that done if we look at the build log.
 We can see that all the static files were collected successfully.
 And if we now go to s3.
-We can see we have a static folder in our bucket with all our static files in it.
-In the next video, we'll upload our product images to s3
+We can see we have a static folder in our bucket with all our static files in
+it. In the next video, we'll upload our product images to s3
 And put the finishing touches on our deployment."""
 
 # Stripe
