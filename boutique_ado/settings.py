@@ -126,8 +126,6 @@ AUTHENTICATION_BACKENDS = [
 
 SITE_ID = 1
 
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-
 ACCOUNT_AUTHENTICATION_METHOD = 'username_email'
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
@@ -301,3 +299,40 @@ STRIPE_WH_SECRET = os.getenv('STRIPE_WH_SECRET', '')
 # The last thing we need to do is add the DEFAULT_FROM_EMAIL to settings.py
 
 DEFAULT_FROM_EMAIL = 'boutiqueado@example.com'
+
+"""The last step then is just to add a few settings to settings.py
+Let's follow a similar procedure to our other settings here,
+where we check if development is in os.environ.
+To determine which email setup to use.
+If that variable is set, we'll log emails to the console.
+And the only setting we need to specify is the default from email.
+And that will be boutiqueado@example.com
+Otherwise, for production we'll need to set several variables.
+EMAIL_BACKEND, which will be set to django.core.mail.backends.smpt.EmailBackend
+EMAIL_USE_TLS which will be true
+EMAIL_PORT which will be port 587
+EMAIL_HOST which will be smtp.gmail.com
+And then the username, password, and DEFAULT_FROM_EMAIL
+all of which will get from the environment.
+With that finished to complete the set up we just need to deploy to Heroku.
+Which can be done by adding all our changes.
+Committing.
+And then issuing a git push
+To test it out let's head to our Heroku app. And try to register for an account.
+I'll use a temporary email from tempmail.org
+So I've got the confirmation email which means email is being sent properly.
+And now I can verify my account.
+And I'm able to login."""
+
+
+if 'DEVELOPMENT' in os.environ:
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend' # this from line 129
+    DEFAULT_FROM_EMAIL = 'boutiqueado@example.com'
+else:
+    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+    EMAIL_USE_TLS = True
+    EMAIL_PORT = 587
+    EMAIL_HOST = 'smtp.gmail.com'
+    EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
+    EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASS')
+    DEFAULT_FROM_EMAIL = os.environ.get('EMAIL_HOST_USER')
